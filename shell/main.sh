@@ -6,7 +6,7 @@ fi
 
 start=`date +%s`
 
-circom circuits/prod/vote.circom --r1cs ---wasm -o build
+circom circuits/prod/init.circom --r1cs ---wasm -o build
 
 end=`date +%s`
 
