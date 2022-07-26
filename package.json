@@ -1,0 +1,21 @@
+{
+  "name": "anonymous-maci",
+  "version": "0.1.0",
+  "description": "Anonymous MACI",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "MACI",
+    "solidity",
+    "zkp"
+  ],
+  "author": "Felix Cai",
+  "license": "ISC",
+  "devDependencies": {
+    "circom": "git://github.com/weijiekoh/circomlib.git#24ed08eee0bb613b8c0135d66c1013bd9f78d50a",
+    "circomlib": "2.0.0",
+    "circomlibjs": "^0.1.7"
+  }
+}
