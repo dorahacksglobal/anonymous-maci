@@ -5,13 +5,14 @@ include "./poseidonDecrypt.circom";
 
 template MessageToCommand() {
     var MSG_LENGTH = 4;
-    var CMD_LENGTH = 2;
+    var CMD_LENGTH = 3;
 
     signal input message[MSG_LENGTH];
     signal input encPrivKey;
     signal input encPubKey[2];
 
     signal output voteInfo;
+    signal output votesRoot;
     signal output inactiveFlag;
 
     component ecdh = Ecdh();
@@ -28,7 +29,8 @@ template MessageToCommand() {
     }
 
     voteInfo <== decryptor.decrypted[0];
-    inactiveFlag <== decryptor.decrypted[1];
+    votesRoot <== decryptor.decrypted[1];
+    inactiveFlag <== decryptor.decrypted[2];
 
     signal output sharedKey[2];
     sharedKey[0] <== ecdh.sharedKey[0];

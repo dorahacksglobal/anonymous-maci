@@ -6,7 +6,7 @@ include "./calculateTotal.circom";
 /*
  * Converts a field element (253 bits) to 10 * (8 + 16) bits output elements
  */
-template unpackVoteInfo() {
+template UnpackVoteInfo() {
     signal input in;
     signal output voteOption[10];
     signal output votes[10];

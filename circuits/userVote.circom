@@ -1,18 +1,25 @@
 pragma circom 2.0.0;
 
+include "../node_modules/circomlib/circuits/mux1.circom";
+include "../node_modules/circomlib/circuits/comparators.circom";
+include "./lib/calculateTotal.circom";
 include "./lib/hasherPoseidon.circom";
 include "./lib/hasherSha256.circom";
 include "./lib/messageToCommand.circom";
 include "./lib/unpackVoteInfo.circom";
 include "./lib/privToPubKey.circom";
+include "./trees/checkRoot.circom";
 include "./trees/incrementalQuinTree.circom";
 
 template UserVote(
-    userTreeDepth
+    userTreeDepth,
+    voteOptionTreeDepth
 ) {
     var TREE_ARITY = 5;
 
     var MSG_LENGTH = 4;
+
+    var numVoteOptions = TREE_ARITY ** voteOptionTreeDepth;
 
     // hex('INACTIVE')
     var INACTIVE = 5282231170384877125;
@@ -33,6 +40,8 @@ template UserVote(
     signal input userPrivKey;
 
     signal input userSalt;
+
+    signal input votes[numVoteOptions];
 
     signal userInactiveFlag;
 
@@ -97,7 +106,7 @@ template UserVote(
     // STEP 3 -----------------------------------------------------------------
     // Verify that the user's balance is sufficient.
 
-    component voteInfo = unpackVoteInfo();
+    component voteInfo = UnpackVoteInfo();
     voteInfo.in <== command.voteInfo;
     
     component sufficientVoiceCredits = GreaterEqThan(20);
@@ -112,6 +121,30 @@ template UserVote(
         validVoteOptionIndex[i].in[1] <== maxVoteOptions;
 
         validVoteOptionIndex[i].out === 1;
+    }
+
+
+    // STEP 4 -----------------------------------------------------------------
+    // Check that the vote root is correct.
+
+    component qcr = QuinCheckRoot(voteOptionTreeDepth);
+    for (var i = 0; i < numVoteOptions; i ++) {
+        qcr.leaves[i] <== votes[i];
+    }
+    qcr.root === command.votesRoot;
+
+    component votesFromCommand[numVoteOptions];
+    component equals[numVoteOptions][10];
+    for (var i = 0; i < numVoteOptions; i ++) {
+        votesFromCommand[i] = CalculateTotal(10);
+        for (var j = 0; j < 10; j ++) {
+            equals[i][j] = IsEqual();
+            equals[i][j].in[0] <== voteInfo.voteOption[j];
+            equals[i][j].in[1] <== i;
+            votesFromCommand[i].nums[j] <== voteInfo.votes[j] * equals[i][j].out;
+        }
+
+        votesFromCommand[i].sum === votes[i];
     }
 
 

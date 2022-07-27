@@ -8,4 +8,4 @@ component main {
   public [
     root
   ]
-} = InactiveSet(4);
+} = InactiveSet(5);
