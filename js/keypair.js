@@ -88,18 +88,3 @@ module.exports = {
   genKeypair,
   genEcdhSharedKey
 }
-
-// TEST
-
-const bob = genKeypair(111111n)
-console.log(bob)
-const alice = genKeypair(20581290025117397817181261615160328137557667676132503327155870263692975425406n)
-console.log(alice)
-
-const key1 = genEcdhSharedKey(bob.privKey, alice.pubKey)
-const ciphertext = poseidonEncrypt([0n, 123456n], key1, 0n)
-console.log(ciphertext)
-
-const key2 = genEcdhSharedKey(alice.privKey, bob.pubKey)
-const plaintext = poseidonDecrypt(ciphertext, key2, 0n, 2)
-console.log(plaintext)
